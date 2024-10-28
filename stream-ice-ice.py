@@ -1,4 +1,4 @@
-import streamlit as st 
+import streamlit as st
 import os
 import cv2
 import numpy as np
@@ -85,12 +85,12 @@ def extract_features(image_path):
     ]
     return features
 
-# Fungsi untuk mengClassificationkan gambar dan menyimpan result
+# Fungsi untuk mengklasifikasikan gambar dan menyimpan hasil
 def classify_and_save(image_path, filename):
     features = extract_features(image_path)
     features_scaled = scaler.transform([features])
-    result = knn.predict(features_scaled)
-    resultProbabilitas = knn.predict_proba(features_scaled)
+    hasil = knn.predict(features_scaled)
+    hasilProbabilitas = knn.predict_proba(features_scaled)
     return {
         'Nama Gambar': filename,
         'Mean_R': features[0], 'Mean_G': features[1], 'Mean_B': features[2],
@@ -99,48 +99,48 @@ def classify_and_save(image_path, filename):
         'Kurtosis_R': features[9], 'Kurtosis_G': features[10], 'Kurtosis_B': features[11],
         'Contrast': features[12], 'Correlation': features[13], 'Homogeneity': features[14],
         'Energy': features[15], 'Entropy': features[16], 'Variance': features[17],
-        'result_KNN': result[0], 'Probabilitas Healty': resultProbabilitas[0][1] * 100,
-        'Probabilitas Sakit': resultProbabilitas[0][0] * 100
+        'Hasil_KNN': hasil[0], 'Probabilitas Sehat': hasilProbabilitas[0][1] * 100,
+        'Probabilitas Sakit': hasilProbabilitas[0][0] * 100
     }
 
 # Fungsi untuk membaca file ice-ice.xlsx
 def read_excel():
-    excel_file = 'result-Classification/ice-ice.xlsx'
+    excel_file = 'hasil-klasifikasi/ice-ice.xlsx'
     if os.path.exists(excel_file):
         df = pd.read_excel(excel_file)
-        df_display = df[['Nama Gambar', 'Homogeneity', 'Energy', 'Entropy', 'Variance', 'result_KNN', 'Probabilitas Healty', 'Probabilitas Sakit']]
+        df_display = df[['Nama Gambar', 'Homogeneity', 'Energy', 'Entropy', 'Variance', 'Hasil_KNN', 'Probabilitas Sehat', 'Probabilitas Sakit']]
         
         for i, row in df_display.iterrows():
             image_path = os.path.join('gambar-dataset', row['Nama Gambar'])
             if os.path.exists(image_path):
                 st.image(image_path, caption=row['Nama Gambar'], use_column_width=True)
-            st.write(f"Name Image: {row['Nama Gambar']}")
+            st.write(f"Nama Gambar: {row['Nama Gambar']}")
             st.write(f"Homogeneity: {row['Homogeneity']}")
             st.write(f"Energy: {row['Energy']}")
             st.write(f"Entropy: {row['Entropy']}")
             st.write(f"Variance: {row['Variance']}")
-            st.write(f"result KNN: {row['hasil_KNN']}")
-            st.write(f"Probabilitas Healty: {row['Probabilitas Healty']:.2f}%")
+            st.write(f"Hasil KNN: {row['Hasil_KNN']}")
+            st.write(f"Probabilitas Sehat: {row['Probabilitas Sehat']:.2f}%")
             st.write(f"Probabilitas Sakit: {row['Probabilitas Sakit']:.2f}%")
             st.write('---')
     else:
-        st.write("No classification results have been stored yet.")
+        st.write("Belum ada hasil klasifikasi yang tersimpan.")
 
 # fungsi untuk menyimpan gambar yang di upload ke folder gambar-dataset
 def upload_image(gambar):
-    save_path = os.path.join('image-dataset', gambar.name)
+    save_path = os.path.join('gambar-dataset', gambar.name)
     with open(save_path, 'wb') as f:
         f.write(gambar.getbuffer())
     
-    st.image(gambar, caption='Uploaded images.', use_column_width=True)
+    st.image(gambar, caption='Gambar yang diunggah.', use_column_width=True)
     
-    # Lakukan Classification dan tampilkan resultnya
+    # Lakukan klasifikasi dan tampilkan hasilnya
     result = classify_and_save(save_path, gambar.name)
-    st.write(f"Predictions: {result['result_KNN']}")
-    st.write(f"Probabilitas Healty: {result['Probabilitas Healty']:.2f}% | Probabilitas Sakit: {result['Probabilitas Sakit']:.2f}%")
+    st.write(f"Prediksi: {result['Hasil_KNN']}")
+    st.write(f"Probabilitas Sehat: {result['Probabilitas Sehat']:.2f}% | Probabilitas Sakit: {result['Probabilitas Sakit']:.2f}%")
     
-    # Simpan result Classification ke file Excel
-    excel_file = 'result-Classification/ice-ice.xlsx'
+    # Simpan hasil klasifikasi ke file Excel
+    excel_file = 'hasil-klasifikasi/ice-ice.xlsx'
     if os.path.exists(excel_file):
         df = pd.read_excel(excel_file)
     else:
@@ -150,18 +150,18 @@ def upload_image(gambar):
             'Skewness_R', 'Skewness_G', 'Skewness_B',
             'Kurtosis_R', 'Kurtosis_G', 'Kurtosis_B',
             'Contrast', 'Correlation', 'Homogeneity', 'Energy', 'Entropy', 'Variance',
-            'result_KNN', 'Probabilitas Healty', 'Probabilitas Sakit'
+            'Hasil_KNN', 'Probabilitas Sehat', 'Probabilitas Sakit'
         ])
     
     # Menggunakan pd.concat untuk menambahkan baris baru ke DataFrame
     df = pd.concat([df, pd.DataFrame([result])], ignore_index=True)
     df.to_excel(excel_file, index=False)
     
-    st.success("result Classification saved.")
+    st.success("Hasil klasifikasi telah disimpan.")
 
 # Download Excel
 def download_excel():
-    excel_file = 'result-Classification/ice-ice.xlsx'
+    excel_file = 'hasil-klasifikasi/ice-ice.xlsx'
     if os.path.exists(excel_file):
         with open(excel_file, 'rb') as f:
             st.download_button(
@@ -171,7 +171,7 @@ def download_excel():
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
     else:
-        st.write("There is no data to download.")
+        st.write("Tidak ada data untuk diunduh.")
 
 # Download Gambar
 def download_image():
@@ -190,13 +190,13 @@ def download_image():
         zip_buffer.seek(0)
         
         st.download_button(
-            label="Download all images as ZIP",
+            label="Download semua gambar sebagai ZIP",
             data=zip_buffer,
             file_name='images.zip',
             mime='application/zip'
         )
     else:
-        st.write("There are no images to download.")
+        st.write("Tidak ada gambar untuk diunduh.")
 
 # Streamlit layout
 st.set_page_config(page_title="Ice-Ice KNN Classifier", layout="wide")
@@ -205,8 +205,8 @@ st.title("Ice-Ice KNN Classifier")
 # Sidebar untuk navigasi halaman
 page = st.sidebar.selectbox("Select Page", ["Home Page", "Image Classification"])
 
-if page == "Home Page":
-    st.header("result Image Classification")
+if page == "Halaman Utama":
+    st.header("Image Classification Results")
     
     # Download Excel
     download_excel()
@@ -214,12 +214,12 @@ if page == "Home Page":
     # Download Gambar
     download_image()
     
-    # Membaca file Excel yang berisi result Classification dari fungsi read_excel()
+    # Membaca file Excel yang berisi hasil klasifikasi dari fungsi read_excel()
     read_excel()
 
-elif page == "Image Classification":
-    st.header("Upload Images for Classification")
-    uploaded_file = st.file_uploader("Select Image...", type=["jpg", "jpeg", "png"])
+elif page == "Klasifikasi Gambar":
+    st.header("Unggah Gambar untuk Klasifikasi")
+    uploaded_file = st.file_uploader("Pilih gambar...", type=["jpg", "jpeg", "png"])
     if uploaded_file is not None:
         # Simpan gambar yang diunggah ke direktori yang ditentukan menggunakan fungsi upload_image()
         upload_image(uploaded_file)
