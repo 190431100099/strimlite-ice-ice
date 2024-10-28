@@ -105,13 +105,13 @@ def classify_and_save(image_path, filename):
 
 # Fungsi untuk membaca file ice-ice.xlsx
 def read_excel():
-    excel_file = 'hasil-klasifikasi/ice-ice.xlsx'
+    excel_file = 'result-classification/ice-ice.xlsx'
     if os.path.exists(excel_file):
         df = pd.read_excel(excel_file)
         df_display = df[['Nama Gambar', 'Homogeneity', 'Energy', 'Entropy', 'Variance', 'Hasil_KNN', 'Probabilitas Sehat', 'Probabilitas Sakit']]
         
         for i, row in df_display.iterrows():
-            image_path = os.path.join('gambar-dataset', row['Nama Gambar'])
+            image_path = os.path.join('image-dataset', row['Nama Gambar'])
             if os.path.exists(image_path):
                 st.image(image_path, caption=row['Nama Gambar'], use_column_width=True)
             st.write(f"Nama Gambar: {row['Nama Gambar']}")
@@ -124,23 +124,23 @@ def read_excel():
             st.write(f"Probabilitas Sakit: {row['Probabilitas Sakit']:.2f}%")
             st.write('---')
     else:
-        st.write("Belum ada hasil klasifikasi yang tersimpan.")
+        st.write("No classification results have been saved yet.")
 
 # fungsi untuk menyimpan gambar yang di upload ke folder gambar-dataset
 def upload_image(gambar):
-    save_path = os.path.join('gambar-dataset', gambar.name)
+    save_path = os.path.join('image-dataset', gambar.name)
     with open(save_path, 'wb') as f:
         f.write(gambar.getbuffer())
     
-    st.image(gambar, caption='Gambar yang diunggah.', use_column_width=True)
+    st.image(gambar, caption='Uploaded images.', use_column_width=True)
     
     # Lakukan klasifikasi dan tampilkan hasilnya
     result = classify_and_save(save_path, gambar.name)
-    st.write(f"Prediksi: {result['Hasil_KNN']}")
-    st.write(f"Probabilitas Sehat: {result['Probabilitas Sehat']:.2f}% | Probabilitas Sakit: {result['Probabilitas Sakit']:.2f}%")
+    st.write(f"Predictions: {result['Hasil_KNN']}")
+    st.write(f"Probabilitas healt: {result['Probabilitas Sehat']:.2f}% | Probabilitas Deseased: {result['Probabilitas Sakit']:.2f}%")
     
     # Simpan hasil klasifikasi ke file Excel
-    excel_file = 'hasil-klasifikasi/ice-ice.xlsx'
+    excel_file = 'result-Classification/ice-ice.xlsx'
     if os.path.exists(excel_file):
         df = pd.read_excel(excel_file)
     else:
@@ -157,11 +157,11 @@ def upload_image(gambar):
     df = pd.concat([df, pd.DataFrame([result])], ignore_index=True)
     df.to_excel(excel_file, index=False)
     
-    st.success("Hasil klasifikasi telah disimpan.")
+    st.success("The classification results have been saved.")
 
 # Download Excel
 def download_excel():
-    excel_file = 'hasil-klasifikasi/ice-ice.xlsx'
+    excel_file = 'result-classifier/ice-ice.xlsx'
     if os.path.exists(excel_file):
         with open(excel_file, 'rb') as f:
             st.download_button(
@@ -171,11 +171,11 @@ def download_excel():
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
     else:
-        st.write("Tidak ada data untuk diunduh.")
+        st.write("No data to download.")
 
 # Download Gambar
 def download_image():
-    image_dir = 'gambar-dataset'
+    image_dir = 'image-dataset'
     images = [f for f in os.listdir(image_dir) if f.endswith(('png', 'jpg', 'jpeg'))]
     
     if images:
@@ -190,13 +190,13 @@ def download_image():
         zip_buffer.seek(0)
         
         st.download_button(
-            label="Download semua gambar sebagai ZIP",
+            label="Download all images as ZIP",
             data=zip_buffer,
             file_name='images.zip',
             mime='application/zip'
         )
     else:
-        st.write("Tidak ada gambar untuk diunduh.")
+        st.write("No images to download.")
 
 # Streamlit layout
 st.set_page_config(page_title="Ice-Ice KNN Classifier", layout="wide")
@@ -217,9 +217,9 @@ if page == "Halaman Utama":
     # Membaca file Excel yang berisi hasil klasifikasi dari fungsi read_excel()
     read_excel()
 
-elif page == "Klasifikasi Gambar":
-    st.header("Unggah Gambar untuk Klasifikasi")
-    uploaded_file = st.file_uploader("Pilih gambar...", type=["jpg", "jpeg", "png"])
+elif page == "Image Classification":
+    st.header("Upload Images for Classification")
+    uploaded_file = st.file_uploader("Select Image...", type=["jpg", "jpeg", "png"])
     if uploaded_file is not None:
         # Simpan gambar yang diunggah ke direktori yang ditentukan menggunakan fungsi upload_image()
         upload_image(uploaded_file)
