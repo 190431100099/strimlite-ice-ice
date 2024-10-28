@@ -161,7 +161,7 @@ def upload_image(gambar):
 
 # Download Excel
 def download_excel():
-    excel_file = 'result-classifier/ice-ice.xlsx'
+    excel_file = 'result-Classification/ice-ice.xlsx'
     if os.path.exists(excel_file):
         with open(excel_file, 'rb') as f:
             st.download_button(
