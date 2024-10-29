@@ -105,26 +105,26 @@ def classify_and_save(image_path, filename):
 
 # Fungsi untuk membaca file ice-ice.xlsx
 def read_excel():
-    excel_file = 'result-classification/ice-ice.xlsx'
+    excel_file = 'result-Classification/ice-ice.xlsx'
     if os.path.exists(excel_file):
         df = pd.read_excel(excel_file)
         df_display = df[['Nama Gambar', 'Homogeneity', 'Energy', 'Entropy', 'Variance', 'Hasil_KNN', 'Probabilitas Sehat', 'Probabilitas Sakit']]
         
         for i, row in df_display.iterrows():
-            image_path = os.path.join('image-dataset', row['Nama Gambar'])
+            image_path = os.path.join('gambar-dataset', row['Nama Gambar'])
             if os.path.exists(image_path):
                 st.image(image_path, caption=row['Nama Gambar'], use_column_width=True)
-            st.write(f"Nama Gambar: {row['Nama Gambar']}")
+            st.write(f"Name image: {row['Nama Gambar']}")
             st.write(f"Homogeneity: {row['Homogeneity']}")
             st.write(f"Energy: {row['Energy']}")
             st.write(f"Entropy: {row['Entropy']}")
             st.write(f"Variance: {row['Variance']}")
-            st.write(f"Hasil KNN: {row['Hasil_KNN']}")
-            st.write(f"Probabilitas Sehat: {row['Probabilitas Sehat']:.2f}%")
-            st.write(f"Probabilitas Sakit: {row['Probabilitas Sakit']:.2f}%")
+            st.write(f"KNN Result: {row['Hasil_KNN']}")
+            st.write(f"Probabilitas Healty: {row['Probabilitas Sehat']:.2f}%")
+            st.write(f"Probabilitas Deseased: {row['Probabilitas Sakit']:.2f}%")
             st.write('---')
     else:
-        st.write("No classification results have been saved yet.")
+        st.write("Belum ada hasil klasifikasi yang tersimpan.")
 
 # fungsi untuk menyimpan gambar yang di upload ke folder gambar-dataset
 def upload_image(gambar):
@@ -136,11 +136,11 @@ def upload_image(gambar):
     
     # Lakukan klasifikasi dan tampilkan hasilnya
     result = classify_and_save(save_path, gambar.name)
-    st.write(f"Predictions: {result['Hasil_KNN']}")
-    st.write(f"Probabilitas healt: {result['Probabilitas Sehat']:.2f}% | Probabilitas Deseased: {result['Probabilitas Sakit']:.2f}%")
+    st.write(f"Prediksi: {result['Hasil_KNN']}")
+    st.write(f"Probabilitas Sehat: {result['Probabilitas Sehat']:.2f}% | Probabilitas Sakit: {result['Probabilitas Sakit']:.2f}%")
     
     # Simpan hasil klasifikasi ke file Excel
-    excel_file = 'result-Classification/ice-ice.xlsx'
+    excel_file = 'hasil-klasifikasi/ice-ice.xlsx'
     if os.path.exists(excel_file):
         df = pd.read_excel(excel_file)
     else:
@@ -157,7 +157,7 @@ def upload_image(gambar):
     df = pd.concat([df, pd.DataFrame([result])], ignore_index=True)
     df.to_excel(excel_file, index=False)
     
-    st.success("The classification results have been saved.")
+    st.success("Hasil klasifikasi telah disimpan.")
 
 # Download Excel
 def download_excel():
@@ -196,7 +196,7 @@ def download_image():
             mime='application/zip'
         )
     else:
-        st.write("No images to download.")
+        st.write("Tidak ada gambar untuk diunduh.")
 
 # Streamlit layout
 st.set_page_config(page_title="Ice-Ice KNN Classifier", layout="wide")
@@ -205,7 +205,7 @@ st.title("Ice-Ice KNN Classifier")
 # Sidebar untuk navigasi halaman
 page = st.sidebar.selectbox("Select Page", ["Home Page", "Image Classification"])
 
-if page == "Halaman Utama":
+if page == "Home Page":
     st.header("Image Classification Results")
     
     # Download Excel
