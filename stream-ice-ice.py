@@ -111,7 +111,7 @@ def read_excel():
         df_display = df[['Nama Gambar', 'Homogeneity', 'Energy', 'Entropy', 'Variance', 'Hasil_KNN', 'Probabilitas Sehat', 'Probabilitas Sakit']]
         
         for i, row in df_display.iterrows():
-            image_path = os.path.join('gambar-dataset', row['Nama Gambar'])
+            image_path = os.path.join('image-dataset', row['Nama Gambar'])
             if os.path.exists(image_path):
                 st.image(image_path, caption=row['Nama Gambar'], use_column_width=True)
             st.write(f"Name image: {row['Nama Gambar']}")
@@ -140,7 +140,7 @@ def upload_image(gambar):
     st.write(f"Probabilitas Sehat: {result['Probabilitas Sehat']:.2f}% | Probabilitas Sakit: {result['Probabilitas Sakit']:.2f}%")
     
     # Simpan hasil klasifikasi ke file Excel
-    excel_file = 'hasil-klasifikasi/ice-ice.xlsx'
+    excel_file = 'result-Classification/ice-ice.xlsx'
     if os.path.exists(excel_file):
         df = pd.read_excel(excel_file)
     else:
